@@ -97,7 +97,7 @@ class SlurmFile(MutableSequence):
 
     def __getitem__(
         self, index: Union[int, slice]
-    ) -> Union[SlurmCommand, MutableSequence[SlurmCommand]]:
+    ) -> Union[SlurmCommand, Iterable[SlurmCommand]]:
         return self._commands[index]
 
     def __setitem__(

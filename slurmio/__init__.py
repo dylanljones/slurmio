@@ -5,4 +5,4 @@
 from .enums import Options
 from .file import SlurmCommand, SlurmFile
 from .options import SlurmOptions
-from .slurm import SlurmJob, rm_slurm_files, sbatch, squeue
+from .slurm import SlurmJob, rm_slurm_files, sbatch, scancel, squeue

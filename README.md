@@ -1,6 +1,11 @@
 # 📁 Slurm-I/O
 
-> [!WARNING]
+Slurm-I/O is a Python package for managing slurm jobs and scripts. The package provides
+a simple interface for reading, writing and updating slurm scripts and managing slurm
+jobs.
+
+
+> [!NOTE]
 >
 > This project was written for my **personal** workflow and might not be suitable for
 > your use case.
@@ -16,7 +21,12 @@ pip install git+ssh://git@github.com/dylanljones/slurmio.git
 
 ## 🚀 Usage
 
-Basic example:
+
+### Slurm Scripts
+
+Slurm scripts can be read, saved and updated using the `SlurmFile` class.
+The file handler supports slurm options, commands and comments and can be used
+to re-order commands in the file.
 
 ```python
 import slurmio
@@ -25,9 +35,9 @@ slurm = slurmio.SlurmFile(job_name="Test", mail_user="example@mail.com", mem="2g
 slurm.add_line()
 slurm.add_comment("Run commands")
 slurm.add_cmd("echo Hello world", comment="Print Hello world")
-print(slurm.dumps())
+slurm.dump("test.slurm")
 ```
-returns
+This will generate the following file:
 ```bash
 #!/bin/bash
 #SBATCH --job-name=Test
@@ -36,6 +46,30 @@ returns
 
 # Run commands
 echo Hello world # Print Hello world
+```
+
+A job can be run without writing a slurm script via the sbatch method:
+```python
+slurm.sbatch()
+```
+
+### Managing Slurm Jobs
+
+`slurmio` provides methods to manage slurm jobs, mirroring the CLI commands:
+```python
+import slurmio
+
+# Get a list of all slurm jobs for a user
+jobs = slurmio.squeue(user="user")
+
+ # Get a specific job by id
+job = slurmio.squeue(job_id="12345678")
+
+# Start a job via a slurm script file
+job_id = slurmio.sbatch("test.slurm")
+
+# Cancel a job by id
+slurmio.scancel(job_id=job_id)
 ```
 
 

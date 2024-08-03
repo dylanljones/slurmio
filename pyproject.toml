@@ -8,7 +8,7 @@ authors = [
     {name = "Dylan Jones", email = "dylanljones94@gmail.com"},
 ]
 license = {file = "LICENSE"}
-dynamic = ["version", "dependencies", "optional-dependencies"]
+dynamic = ["version"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -27,9 +27,6 @@ requires-python = ">=3.8"
 
 [project.urls]
 Source = "https://github.com/dylanljones/slurmio"
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
 
 
 # -- Build -----------------------------------------------------------------------------

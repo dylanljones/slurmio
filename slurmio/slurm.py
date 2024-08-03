@@ -9,8 +9,6 @@ from subprocess import PIPE, Popen
 from time import sleep
 from typing import List, Union
 
-SQUEUE_FRMT = "%.20i %.10P %.20j %.10u %.10T %.10M %.10l %.10m %.10D %.10N"
-
 
 @dataclass
 class SlurmJob:

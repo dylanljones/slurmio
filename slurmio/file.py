@@ -220,7 +220,7 @@ class SlurmFile(MutableSequence[SlurmCommand]):
         return self.add_cmd(after=after, before=before)
 
     def add(
-        self, text: str, after: SlurmCommand = None, before: SlurmCommand = None
+        self, text: str = "", after: SlurmCommand = None, before: SlurmCommand = None
     ) -> SlurmCommand:
         text = text.strip()
         if "#" in text:
@@ -228,6 +228,15 @@ class SlurmFile(MutableSequence[SlurmCommand]):
         else:
             command, comment = text, None
         return self.add_cmd(command, comment, after=after, before=before)
+
+    def echo(
+        self,
+        text: str,
+        comment: str = None,
+        after: SlurmCommand = None,
+        before: SlurmCommand = None,
+    ) -> SlurmCommand:
+        return self.add_cmd(f"echo {text}", comment=comment, after=after, before=before)
 
     def remove_cmd(self, cmd: SlurmCommand) -> None:
         self._commands.remove(cmd)

@@ -55,16 +55,17 @@ class SlurmFile(MutableSequence[SlurmCommand]):
         partition: str = None,
         priority: Union[str, int] = None,
         time: str = None,
+        shell: str = "/bin/bash",
         **kwargs,
     ):
         self._file: Union[Path, None] = Path(file) if file is not None else None
-        self._schebang: str = "#!/bin/bash"
+        self._shell: str = shell
         self._options: SlurmOptions = SlurmOptions()
         self._commands: List[SlurmCommand] = list()
 
         self.load(missing_ok=True)
         for key, val in locals().items():
-            if key not in ("self", "kwargs", "file") and val is not None:
+            if key not in ("self", "kwargs", "file", "shell") and val is not None:
                 kwargs[key] = val
         self.options.update(kwargs)
 
@@ -75,6 +76,14 @@ class SlurmFile(MutableSequence[SlurmCommand]):
     @property
     def options(self) -> SlurmOptions:
         return self._options
+
+    @property
+    def shell(self) -> str:
+        return self._shell
+
+    @shell.setter
+    def shell(self, value: str) -> None:
+        self._shell = value
 
     @property
     def commands(self) -> List[SlurmCommand]:
@@ -109,7 +118,7 @@ class SlurmFile(MutableSequence[SlurmCommand]):
         lines = data.splitlines(keepends=False)
         # Parse shebang line
         if lines[0].startswith("#!"):
-            self._schebang = lines.pop(0).strip()
+            self._shell = lines.pop(0).replace("#!", "").strip()
 
         # Parse SLURM options
         self._options.clear()
@@ -138,7 +147,7 @@ class SlurmFile(MutableSequence[SlurmCommand]):
 
     def dumps(self, linesep: str = "\n") -> str:
         """Serialize the SLURM file to a string."""
-        lines = [self._schebang]
+        lines = ["#!" + self._shell]
         for k, v in self._options.items():
             lines.append(f"#SBATCH --{k.replace('_', '-')}={v}")
 

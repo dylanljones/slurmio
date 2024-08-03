@@ -67,9 +67,15 @@ class SlurmJob:
     def output_file(self) -> Path:
         return Path(f"slurm-{self.jobid}.out")
 
-    def __str__(self):
-        items = [f"{k}={v}" for k, v in self.__dict__.items() if v is not None]
-        return f"Job({', '.join(items)})"
+    def pformat(self) -> str:
+        lines = list()
+        for k, v in self.__dict__.items():
+            if v is not None:
+                lines.append(f"{k + ':':<20} {v}")
+        return "\n".join(lines)
+
+    def __repr__(self) -> str:
+        return f"Job({self.jobid}, {self.name}, {self.state})"
 
 
 def _run(cmd: List[str], shell: bool = None) -> str:

@@ -17,7 +17,7 @@ K = Union[str, Options]
 V = Union[str, int, float]
 
 
-class SlurmOptions(MutableMapping[K, V]):
+class SlurmOptions(MutableMapping):
     PREFIX = "#SBATCH"
 
     def __init__(

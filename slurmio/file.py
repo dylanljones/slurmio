@@ -30,7 +30,7 @@ class SlurmCommand:
         self.comment = re.sub(pattern, repl, self.comment)
 
 
-class SlurmFile(MutableSequence[SlurmCommand]):
+class SlurmFile(MutableSequence):
     def __init__(
         self,
         file: Union[str, Path] = None,

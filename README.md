@@ -1,6 +1,6 @@
 # 📁 Slurm-I/O
 
-Slurm-I/O is a Python package for managing slurm jobs and scripts. The package provides
+Slurm-I/O is a lightweight Python package for managing slurm jobs and scripts. The package provides
 a simple interface for reading, writing and updating slurm scripts and managing slurm
 jobs.
 

@@ -8,7 +8,7 @@ authors = [
     {name = "Dylan Jones", email = "dylanljones94@gmail.com"},
 ]
 license = {file = "LICENSE"}
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -18,15 +18,21 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
 [project.urls]
 Source = "https://github.com/dylanljones/slurmio"
+
+[project.scripts]
+slurmio = "slurmio.__main__:cli"
 
 
 # -- Build -----------------------------------------------------------------------------
 
 [build-system]
 requires = [
-    "setuptools",
+    "setuptools >= 61.0.0",
     "wheel",
     "setuptools_scm[toml]",
     "setuptools_scm_git_archive",
@@ -104,6 +110,7 @@ unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
 "*__init__.py" = ["F401"]
+"*__main__.py" = ["ANN201", "ANN202"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

@@ -2,16 +2,22 @@
 # Author: Dylan Jones
 # Date:   2024-08-03
 
+import json
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
 from subprocess import PIPE, Popen
 from time import sleep
-from typing import List, Union
+from typing import Any, Dict, List, Union
+
+from .models import Sacct, Squeue
 
 
 @dataclass
 class SlurmJob:
+    """..deprecated:: 1.0.0."""
+
+    jobid: str
     account: str = None
     array_job_id: str = None
     array_task_id: str = None
@@ -28,7 +34,6 @@ class SlurmJob:
     exec_host: str = None
     features: str = None
     group: str = None
-    jobid: str = None
     licenses: str = None
     min_cpus: str = None
     min_memory: str = None
@@ -72,6 +77,9 @@ class SlurmJob:
                 lines.append(f"{k + ':':<20} {v}")
         return "\n".join(lines)
 
+    def dict(self) -> Dict[str, Any]:
+        return dict(self.__dict__.items())
+
     def __repr__(self) -> str:
         return f"Job({self.jobid}, {self.name}, {self.state})"
 
@@ -97,7 +105,7 @@ def _parse_time(t: str) -> timedelta:
     return timedelta(seconds=seconds)
 
 
-def squeue(
+def squeue_old(
     user: str = None,
     job_id: str = None,
     fields: List[str] = None,
@@ -140,7 +148,41 @@ def squeue(
     return items
 
 
-def sbatch(file_or_script: Union[str, Path]) -> SlurmJob:
+def squeue(user: str = None, job_id: str = None) -> List[Squeue]:
+    cmd = ["squeue", "--json"]
+    if user:
+        cmd += ["-u", user]
+    if job_id:
+        cmd += ["--job", job_id]
+    out = _run(cmd)
+    raw = json.loads(out)
+    errors = raw["errors"]
+    warnings = raw["warnings"]
+    if warnings:
+        print("Warning:", warnings)
+    if errors:
+        raise Exception(errors)
+    return [Squeue(**job) for job in raw["jobs"]]
+
+
+def sacct(user: str = None, job_id: str = None) -> List[Sacct]:
+    cmd = ["sacct", "--json"]
+    if user:
+        cmd += ["-u", user]
+    if job_id:
+        cmd += ["--job", job_id]
+    out = _run(cmd)
+    raw = json.loads(out)
+    errors = raw["errors"]
+    warnings = raw["warnings"]
+    if warnings:
+        print("Warning:", warnings)
+    if errors:
+        raise Exception(errors)
+    return [Sacct(**job) for job in raw["jobs"]]
+
+
+def sbatch(file_or_script: Union[str, Path]) -> Squeue:
     """Submit a slurm job and return the job id."""
     file = Path(file_or_script)
     if file.exists():

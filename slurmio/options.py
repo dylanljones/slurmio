@@ -8,7 +8,7 @@ from collections import OrderedDict
 from collections.abc import MutableMapping
 from typing import Iterable, Union
 
-from .enums import Options
+from .models import Options
 
 # noinspection PyProtectedMember
 OPTIONS = set(Options._member_names_)

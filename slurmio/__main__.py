@@ -138,9 +138,8 @@ def squeue(me: bool, user: str, job_id: str):
     click.echo()
 
 
-@cli.command(["changedir", "cd"])
-@click.argument("index", type=int)
-def changedir(index: int):
+@cli.command(["showdirs", "sd"])
+def showdirs():
     user = os.getlogin()
     try:
         jobs = slurmio.squeue(user=user)
@@ -151,12 +150,10 @@ def changedir(index: int):
         click.echo("No jobs found.")
         return
 
-    job = jobs[index]
-    cwd = job.current_working_directory
-
-    header = click.style(f"[{job.job_id}]", fg="bright_blue") + f" {job.name}: "
-    click.echo(header + click.style(cwd, fg="yellow"))
-    os.system(f"cd {cwd}")
+    for job in jobs:
+        cwd = job.current_working_directory
+        header = click.style(f"[{job.job_id}]", fg="bright_blue") + f" {job.name}: "
+        click.echo(header + click.style(cwd, fg="yellow"))
 
 
 if __name__ == "__main__":

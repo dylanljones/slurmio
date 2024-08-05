@@ -223,12 +223,17 @@ class SlurmScript(MutableSequence):
     def add(
         self, text: str = "", after: SlurmCommand = None, before: SlurmCommand = None
     ) -> List[SlurmCommand]:
-        text = dedent(text.strip())
+        if text == "":
+            return [self.add_line(after=after, before=before)]
+
+        text = dedent(text)
         lines = text.splitlines(keepends=False)
         cmds = list()
         for line in lines:
-            if "#" in text:
+            line = line.strip()
+            if "#" in line:
                 command, comment = line.split("#", 1)
+                command, comment = command.strip(), comment.strip()
             else:
                 command, comment = line, None
             cmd = self.add_cmd(command, comment, after=after, before=before)

@@ -8,7 +8,7 @@ authors = [
     {name = "Dylan Jones", email = "dylanljones94@gmail.com"},
 ]
 license = {file = "LICENSE"}
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -16,7 +16,12 @@ classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
 ]
+keywords = ["slurm", "io", "hpc", "high", "performance", "computing"]
 requires-python = ">=3.8"
+dependencies = [
+    "click",
+    "pydantic",
+]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}

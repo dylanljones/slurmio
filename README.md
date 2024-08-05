@@ -24,14 +24,14 @@ pip install git+ssh://git@github.com/dylanljones/slurmio.git
 
 ### Slurm Scripts
 
-Slurm scripts can be read, saved and updated using the `SlurmFile` class.
+Slurm scripts can be read, saved and updated using the `SlurmScript` class.
 The file handler supports slurm options, commands and comments and can be used
 to re-order commands in the file.
 
 ```python
 import slurmio
 
-slurm = slurmio.SlurmFile(job_name="Test", mail_user="example@mail.com", mem="2gb")
+slurm = slurmio.SlurmScript(job_name="Test", mail_user="example@mail.com", mem="2gb")
 slurm.add_line()
 slurm.add_comment("Run commands")
 slurm.add_cmd("echo Hello world", comment="Print Hello world")
@@ -66,10 +66,19 @@ jobs = slurmio.squeue(user="user")
 job = slurmio.squeue(job_id="12345678")
 
 # Start a job via a slurm script file
-job_id = slurmio.sbatch("test.slurm")
+job = slurmio.sbatch("test.slurm")
 
 # Cancel a job by id
-slurmio.scancel(job_id=job_id)
+slurmio.scancel(job_id=job.job_id)
+```
+
+### CLI
+
+`slurmio` provides a CLI for managing slurm jobs and scripts. These commands are
+basically clones of the original slurm commands - with some improvements:
+
+```bash
+slurmio squ -u user
 ```
 
 

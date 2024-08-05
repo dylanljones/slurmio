@@ -107,7 +107,7 @@ def _parse_time(t: str) -> timedelta:
 
 def squeue_old(
     user: str = None,
-    job_id: str = None,
+    job_id: Union[int, str] = None,
     fields: List[str] = None,
     delim: str = "|",
 ) -> List[SlurmJob]:
@@ -117,7 +117,7 @@ def squeue_old(
     if user:
         cmd += ["-u", user]
     if job_id:
-        cmd += ["--job", job_id]
+        cmd += ["--job", str(job_id)]
 
     if fields is None:
         # Return all fields by default
@@ -148,12 +148,12 @@ def squeue_old(
     return items
 
 
-def squeue(user: str = None, job_id: str = None) -> List[Squeue]:
+def squeue(user: str = None, job_id: Union[int, str] = None) -> List[Squeue]:
     cmd = ["squeue", "--json"]
     if user:
         cmd += ["-u", user]
     if job_id:
-        cmd += ["--job", job_id]
+        cmd += ["--job", str(job_id)]
     out = _run(cmd)
     raw = json.loads(out)
     errors = raw["errors"]
@@ -165,12 +165,12 @@ def squeue(user: str = None, job_id: str = None) -> List[Squeue]:
     return [Squeue(**job) for job in raw["jobs"]]
 
 
-def sacct(user: str = None, job_id: str = None) -> List[Sacct]:
+def sacct(user: str = None, job_id: Union[int, str] = None) -> List[Sacct]:
     cmd = ["sacct", "--json"]
     if user:
         cmd += ["-u", user]
     if job_id:
-        cmd += ["--job", job_id]
+        cmd += ["--job", str(job_id)]
     out = _run(cmd)
     raw = json.loads(out)
     errors = raw["errors"]
@@ -203,9 +203,9 @@ def sbatch(file_or_script: Union[str, Path]) -> Squeue:
     return jobs[0]
 
 
-def scancel(job_id: str) -> str:
+def scancel(job_id: Union[int, str]) -> str:
     """Cancel a slurm job and return the output."""
-    cmd = ["scancel", job_id]
+    cmd = ["scancel", str(job_id)]
     out = _run(cmd)
     return out
 

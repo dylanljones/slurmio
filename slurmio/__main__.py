@@ -44,6 +44,7 @@ def format_squeue(jobs: List[Squeue], maxw: int = 20):
     headers = [
         "ID",
         "Name",
+        "User",
         "State",
         "Time",
         "Memory",
@@ -67,8 +68,9 @@ def format_squeue(jobs: List[Squeue], maxw: int = 20):
         nodelist = job.nodes
         nodes = str(job.node_count.number)
         tasks = str(job.tasks.number)
+        user = job.user_name
 
-        row = [job_id, name, state, t, mem, partition, nodelist, nodes, tasks]
+        row = [job_id, name, user, state, t, mem, partition, nodelist, nodes, tasks]
         widths = [max(len(x), y) for x, y in zip(row, widths)]
 
         rows.append(row)

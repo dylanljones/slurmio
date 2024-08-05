@@ -119,18 +119,18 @@ def squeue(me: bool, user: str, job_id: str):
     if header_line:
         click.echo("-" * len(headerstr))
     for parts in rows[1:]:
-        state = parts[2].strip()
+        state = parts[3].strip()
         if state != "RUNNING":
             parts = [click.style(x, fg="bright_black") for x in parts]
         else:
             parts[0] = click.style(parts[0], fg="bright_blue")
-            parts[2] = click.style(parts[2], fg="green")
+            parts[3] = click.style(parts[3], fg="green")
             fg = "yellow"
-            parts[4] = click.style(parts[4], fg)
             parts[5] = click.style(parts[5], fg)
             parts[6] = click.style(parts[6], fg)
             parts[7] = click.style(parts[7], fg)
             parts[8] = click.style(parts[8], fg)
+            parts[9] = click.style(parts[9], fg)
         click.echo(delim.join(parts))
     click.echo()
 

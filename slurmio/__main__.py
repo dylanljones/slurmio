@@ -135,5 +135,16 @@ def squeue(me: bool, user: str, job_id: str):
     click.echo()
 
 
+@cli.command(["changedir", "cd"])
+@click.argument("index", type=int, help="The index of the job")
+def changedir(index):
+    user = pwd.getpwuid(os.getuid()).pw_name
+    jobs = slurmio.squeue(user=user)
+    job = jobs[index]
+
+    cwd = job.current_working_directory
+    os.system(f"cd {cwd}")
+
+
 if __name__ == "__main__":
     cli()

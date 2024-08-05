@@ -153,7 +153,9 @@ def changedir(index: int):
 
     job = jobs[index]
     cwd = job.current_working_directory
-    click.echo([click.style(job.id, fg="bright_blue")])
+
+    header = click.style(f"[{job.job_id}]", fg="bright_blue") + f" {job.name} "
+    click.echo(header)
     os.system(f"cd {cwd}")
 
 

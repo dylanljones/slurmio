@@ -149,10 +149,14 @@ def showdirs():
     if not jobs:
         click.echo("No jobs found.")
         return
+    w1 = max(job.job_id for job in jobs) + 2
+    w2 = max(len(job.name) for job in jobs) + 1
 
     for job in jobs:
         cwd = job.current_working_directory
-        header = click.style(f"[{job.job_id}]", fg="bright_blue") + f" {job.name}: "
+        s1 = f"[{job.job_id}]"
+        s2 = f"{job.name}:"
+        header = click.style(f"{s1:<{w1}}", fg="bright_blue") + f" {s2:<{w2}} "
         click.echo(header + click.style(cwd, fg="yellow"))
 
 

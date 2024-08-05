@@ -23,9 +23,6 @@ dependencies = [
     "pydantic",
 ]
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
-
 [project.urls]
 Source = "https://github.com/dylanljones/slurmio"
 

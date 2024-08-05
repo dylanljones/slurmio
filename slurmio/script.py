@@ -6,10 +6,11 @@ import re
 from collections.abc import MutableSequence
 from dataclasses import dataclass
 from pathlib import Path
+from textwrap import dedent
 from typing import Iterable, List, Union
 
 from .options import SlurmOptions
-from .slurm import SlurmJob, sbatch
+from .slurm import Squeue, sbatch
 
 
 @dataclass
@@ -221,17 +222,22 @@ class SlurmScript(MutableSequence):
 
     def add(
         self, text: str = "", after: SlurmCommand = None, before: SlurmCommand = None
-    ) -> SlurmCommand:
-        text = text.strip()
-        if "#" in text:
-            command, comment = text.split("#", 1)
-        else:
-            command, comment = text, None
-        return self.add_cmd(command, comment, after=after, before=before)
+    ) -> List[SlurmCommand]:
+        text = dedent(text.strip())
+        lines = text.splitlines(keepends=False)
+        cmds = list()
+        for line in lines:
+            if "#" in text:
+                command, comment = line.split("#", 1)
+            else:
+                command, comment = line, None
+            cmd = self.add_cmd(command, comment, after=after, before=before)
+            cmds.append(cmd)
+        return cmds
 
     def echo(
         self,
-        text: str,
+        text: str = "",
         comment: str = None,
         after: SlurmCommand = None,
         before: SlurmCommand = None,
@@ -272,6 +278,6 @@ class SlurmScript(MutableSequence):
                 comment = re.compile(comment)
             return [cmd for cmd in self._commands if comment.match(cmd.comment)]
 
-    def sbatch(self) -> SlurmJob:
+    def sbatch(self) -> Squeue:
         """Submit the SLURM file as a job."""
         return sbatch(self.dumps())

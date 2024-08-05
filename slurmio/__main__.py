@@ -2,6 +2,8 @@
 # Author: Dylan Jones
 # Date:   2024-08-04
 
+import os
+import pwd
 import time
 from datetime import timedelta
 from typing import List
@@ -83,12 +85,21 @@ def cli():
 
 
 @cli.command(["squeue", "squ"])
+@click.option("--me", "-m", is_flag=True, help="Show only my jobs", default=False)
 @click.option("--user", "-u", help="Filter jobs by user", default=None)
 @click.option("--job_id", "-i", help="Filter jobs by job id", default=None)
-def squeue(user: str, job_id: str):
+def squeue(me: bool, user: str, job_id: str):
     delim = " | "
     maxw = 20
     header_line = False
+
+    if me:
+        # Get current user name
+        if user:
+            raise click.BadOptionUsage(
+                "--me", "Cannot use --me and --user at the same time."
+            )
+        user = pwd.getpwuid(os.getuid()).pw_name
 
     jobs = slurmio.squeue(user=user, job_id=job_id)
     headers, rows = format_squeue(jobs, maxw)

@@ -157,9 +157,6 @@ def squeue(user: str = None, job_id: Union[int, str] = None) -> List[Squeue]:
     out = _run(cmd)
     raw = json.loads(out)
     errors = raw["errors"]
-    warnings = raw["warnings"]
-    if warnings:
-        print("Warning:", warnings)
     if errors:
         raise Exception(errors)
     return [Squeue(**job) for job in raw["jobs"]]
@@ -174,9 +171,6 @@ def sacct(user: str = None, job_id: Union[int, str] = None) -> List[Sacct]:
     out = _run(cmd)
     raw = json.loads(out)
     errors = raw["errors"]
-    warnings = raw["warnings"]
-    if warnings:
-        print("Warning:", warnings)
     if errors:
         raise Exception(errors)
     return [Sacct(**job) for job in raw["jobs"]]

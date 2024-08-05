@@ -57,8 +57,11 @@ def format_squeue(jobs: List[Squeue], maxw: int = 20):
         job_id = str(job.job_id)
         name = job.name
         state = ",".join(job.job_state)
-        partition = job.partition
-        t = str(timedelta(seconds=round(time.time() - job.start_time.number)))
+        partition = job.partition  #
+        if state == "RUNNING":
+            t = str(timedelta(seconds=round(time.time() - job.start_time.number)))
+        else:
+            t = "00:00"
         # tlim = str(timedelta(minutes=job.time_limit.number))
         mem = str(job.memory_per_node.number)
         nodelist = job.nodes
@@ -105,6 +108,11 @@ def squeue(me: bool, user: str, job_id: str):
     headers, rows = format_squeue(jobs, maxw)
     headerstr = delim.join([click.style(x, bold=True) for x in headers])
     click.echo()
+    if not jobs:
+        click.echo("No jobs found.")
+        click.echo()
+        return
+
     click.echo(headerstr)
     if header_line:
         click.echo("-" * len(headerstr))

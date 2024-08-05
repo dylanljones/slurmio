@@ -86,7 +86,10 @@ class SlurmJob:
 
 def _run(cmd: List[str], shell: bool = None) -> str:
     """Run a command and return the output or raise an exception if it fails."""
-    process = Popen(cmd, shell=shell, stdout=PIPE, stderr=PIPE)
+    try:
+        process = Popen(cmd, shell=shell, stdout=PIPE, stderr=PIPE)
+    except FileNotFoundError:
+        raise Exception("Command not found: " + " ".join(cmd))
     out, err = process.communicate()
     if err:
         raise Exception(err.decode("utf-8"))

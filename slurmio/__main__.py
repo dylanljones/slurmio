@@ -3,7 +3,6 @@
 # Date:   2024-08-04
 
 import os
-import pwd
 import time
 from datetime import timedelta
 from typing import List
@@ -104,9 +103,13 @@ def squeue(me: bool, user: str, job_id: str):
             raise click.BadOptionUsage(
                 "--me", "Cannot use --me and --user at the same time."
             )
-        user = pwd.getpwuid(os.getuid()).pw_name
+        user = os.getlogin()
 
-    jobs = slurmio.squeue(user=user, job_id=job_id)
+    try:
+        jobs = slurmio.squeue(user=user, job_id=job_id)
+    except Exception as e:
+        raise click.ClickException(str(e))
+
     headers, rows = format_squeue(jobs, maxw)
     headerstr = delim.join([click.style(x, bold=True) for x in headers])
     click.echo()
@@ -136,13 +139,21 @@ def squeue(me: bool, user: str, job_id: str):
 
 
 @cli.command(["changedir", "cd"])
-@click.argument("index", type=int, help="The index of the job")
-def changedir(index):
-    user = pwd.getpwuid(os.getuid()).pw_name
-    jobs = slurmio.squeue(user=user)
-    job = jobs[index]
+@click.argument("index", type=int)
+def changedir(index: int):
+    user = os.getlogin()
+    try:
+        jobs = slurmio.squeue(user=user)
+    except Exception as e:
+        raise click.ClickException(str(e))
 
+    if not jobs:
+        click.echo("No jobs found.")
+        return
+
+    job = jobs[index]
     cwd = job.current_working_directory
+    click.echo([click.style(job.id, fg="bright_blue")])
     os.system(f"cd {cwd}")
 
 

@@ -2,7 +2,7 @@
 # Author: Dylan Jones
 # Date:   2024-08-04
 
-import os
+import getpass
 import time
 from datetime import timedelta
 from typing import List
@@ -103,7 +103,7 @@ def squeue(me: bool, user: str, job_id: str):
             raise click.BadOptionUsage(
                 "--me", "Cannot use --me and --user at the same time."
             )
-        user = os.getlogin()
+        user = getpass.getuser()
 
     try:
         jobs = slurmio.squeue(user=user, job_id=job_id)
@@ -140,7 +140,7 @@ def squeue(me: bool, user: str, job_id: str):
 
 @cli.command(["showdirs", "sd"])
 def showdirs():
-    user = os.getlogin()
+    user = getpass.getuser()
     try:
         jobs = slurmio.squeue(user=user)
     except Exception as e:

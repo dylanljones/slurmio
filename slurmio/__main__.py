@@ -2,7 +2,6 @@
 # Author: Dylan Jones
 # Date:   2024-08-04
 
-import getpass
 import time
 from datetime import timedelta
 from typing import List
@@ -11,6 +10,7 @@ import click
 
 import slurmio
 from slurmio.models import Squeue
+from slurmio.utility import get_user, padstr
 
 
 class AliasedGroup(click.Group):
@@ -31,11 +31,6 @@ class AliasedGroup(click.Group):
             return cmd
 
         return decorator
-
-
-def padstr(s: str, w: int, align: str = ">", placeholder: str = "...") -> str:
-    s = s[:w] if len(s) <= w else s[: w - len(placeholder)] + placeholder
-    return f"{s:{align}{w}}"
 
 
 def format_squeue(jobs: List[Squeue], maxw: int = 20):
@@ -103,7 +98,7 @@ def squeue(me: bool, user: str, job_id: str):
             raise click.BadOptionUsage(
                 "--me", "Cannot use --me and --user at the same time."
             )
-        user = getpass.getuser()
+        user = get_user()
 
     try:
         jobs = slurmio.squeue(user=user, job_id=job_id)
@@ -121,7 +116,7 @@ def squeue(me: bool, user: str, job_id: str):
     click.echo(headerstr)
     if header_line:
         click.echo("-" * len(headerstr))
-    for parts in rows[1:]:
+    for parts in rows:
         state = parts[3].strip()
         if state != "RUNNING":
             parts = [click.style(x, fg="bright_black") for x in parts]
@@ -140,7 +135,7 @@ def squeue(me: bool, user: str, job_id: str):
 
 @cli.command(["showdirs", "sd"])
 def showdirs():
-    user = getpass.getuser()
+    user = get_user()
     try:
         jobs = slurmio.squeue(user=user)
     except Exception as e:

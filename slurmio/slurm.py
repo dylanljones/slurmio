@@ -6,11 +6,11 @@ import json
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from subprocess import PIPE, Popen
 from time import sleep
 from typing import Any, Dict, List, Union
 
 from .models import Sacct, Squeue
+from .utility import run
 
 
 @dataclass
@@ -84,18 +84,6 @@ class SlurmJob:
         return f"Job({self.jobid}, {self.name}, {self.state})"
 
 
-def _run(cmd: List[str], shell: bool = None) -> str:
-    """Run a command and return the output or raise an exception if it fails."""
-    try:
-        process = Popen(cmd, shell=shell, stdout=PIPE, stderr=PIPE)
-    except FileNotFoundError:
-        raise Exception("Command not found: " + " ".join(cmd))
-    out, err = process.communicate()
-    if err:
-        raise Exception(err.decode("utf-8"))
-    return out.decode("utf-8")
-
-
 def _parse_time(t: str) -> timedelta:
     days, time = t.split("-") if "-" in t else (0, t)
     parts = time.split(":")
@@ -130,7 +118,7 @@ def squeue_old(
     cmd += ["-o", delim.join([f"%{f}" for f in fields])]
 
     # Run squeue command
-    data = _run(cmd)
+    data = run(cmd)
 
     # Parse squeue output
     lines = data.splitlines()
@@ -157,7 +145,7 @@ def squeue(user: str = None, job_id: Union[int, str] = None) -> List[Squeue]:
         cmd += ["-u", user]
     if job_id:
         cmd += ["--job", str(job_id)]
-    out = _run(cmd)
+    out = run(cmd)
     raw = json.loads(out)
     errors = raw["errors"]
     if errors:
@@ -171,7 +159,7 @@ def sacct(user: str = None, job_id: Union[int, str] = None) -> List[Sacct]:
         cmd += ["-u", user]
     if job_id:
         cmd += ["--job", str(job_id)]
-    out = _run(cmd)
+    out = run(cmd)
     raw = json.loads(out)
     errors = raw["errors"]
     if errors:
@@ -188,7 +176,7 @@ def sbatch(file_or_script: Union[str, Path]) -> Squeue:
         cmd = [
             "\n".join(["sbatch << EOF", file_or_script, "EOF"]),
         ]
-    stdout = _run(cmd, shell=True)
+    stdout = run(cmd, shell=True)
     success_msg = "Submitted batch job"
     assert success_msg in stdout
     job_id = stdout.split()[3].strip()
@@ -203,7 +191,7 @@ def sbatch(file_or_script: Union[str, Path]) -> Squeue:
 def scancel(job_id: Union[int, str]) -> str:
     """Cancel a slurm job and return the output."""
     cmd = ["scancel", str(job_id)]
-    out = _run(cmd)
+    out = run(cmd)
     return out
 
 

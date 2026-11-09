@@ -62,7 +62,7 @@ import slurmio
 # Get a list of all slurm jobs for a user
 jobs = slurmio.squeue(user="user")
 
- # Get a specific job by id
+# Get a specific job by id
 job = slurmio.squeue(job_id="12345678")
 
 # Start a job via a slurm script file
